@@ -29,7 +29,7 @@
 //     try {
 //       if (isSwitchEnabled) {
 //         await axios.post(
-//           'https://deep-zitella-artemys-846660d9.koyeb.app/marketplace/add-premium-prompts/',
+//           'https://deep-zitella-Nebula-846660d9.koyeb.app/marketplace/add-premium-prompts/',
 //           {
 //             ipfs_image_url: imageUrl,
 //             prompt: promptValue,
@@ -43,7 +43,7 @@
 //         );
 //       } else {
 //         await axios.post(
-//           'https://deep-zitella-artemys-846660d9.koyeb.app/prompts/add-public-prompts/',
+//           'https://deep-zitella-Nebula-846660d9.koyeb.app/prompts/add-public-prompts/',
 //           {
 //             ipfs_image_url: imageUrl,
 //             prompt: promptValue,
