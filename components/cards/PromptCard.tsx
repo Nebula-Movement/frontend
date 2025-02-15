@@ -40,9 +40,9 @@ const PromptCard = ({ img, name, prompt, creator, price, cid }) => {
           <div className="w-full">
             <div>
               <img
-                src="https://s2.coinmarketcap.com/static/img/coins/200x200/21794.png"
+                src="https://pbs.twimg.com/profile_images/1744477796301496320/z7AIB7_W_400x400.jpg"
                 alt=""
-                className="w-[34px] h-[35px] p-1 absolute top-4 right-3 bg-white/80 rounded-2xl"
+                className="w-[34px] h-[35px] p-1 absolute top-4 right-3 bg-white/30 rounded-2xl"
               />
             </div>
             <div>
@@ -76,7 +76,7 @@ const PromptCard = ({ img, name, prompt, creator, price, cid }) => {
               <div className="flex flex-col w-full px-2 ">
                 <p>Price:</p>
                 <p className="flex items-center text-sm">
-                  <span>{price} APT</span>
+                  <span>{price} MOVE</span>
                 </p>
               </div>
               <div className="flex flex-col">

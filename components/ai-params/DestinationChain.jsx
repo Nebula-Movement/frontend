@@ -4,7 +4,7 @@ import { Listbox, Transition } from '@headlessui/react';
 
 const destination_chain = [
   {
-    name: 'Aptos Testnet',
+    name: 'Movement Porto Testnet',
     img: 'https://s2.coinmarketcap.com/static/img/coins/200x200/21794.png',
   },
 ];

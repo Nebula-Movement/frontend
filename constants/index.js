@@ -54,11 +54,11 @@ export const navigation = [
     href: '/marketplace',
     icon: <FaExchangeAlt className="bg-transparent" />,
   },
-  {
-    name: 'Challenges',
-    href: '/challenges',
-    icon: <MdOutlineTaskAlt className="bg-transparent" />,
-  },
+  // {
+  //   name: 'Challenges',
+  //   href: '/challenges',
+  //   icon: <MdOutlineTaskAlt className="bg-transparent" />,
+  // },
   {
     name: 'Leaderboard',
     href: '/leaderboard',

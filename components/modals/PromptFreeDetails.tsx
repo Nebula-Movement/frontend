@@ -47,8 +47,9 @@ const PromptFreeDetails = ({
 
   const handleCopyClick = () => {
     setButtonText('Copied!');
-    navigator.clipboard.writeText(prompt);
-
+    if (!prompt.startsWith('U2FsdGVkX1')) {
+      navigator.clipboard.writeText(prompt);
+    }
     setTimeout(() => {
       setButtonText('Copy Prompt');
     }, 3000);
@@ -215,13 +216,16 @@ const PromptFreeDetails = ({
                           Prompt Details
                         </h4>
                         <p className="ml-[10px] w-full mt-2 text-sm p-2 rounded-md border-[10px] border-[#292828] text-gray-300">
-                          {prompt}
+                          {prompt.startsWith('U2FsdGVkX1')
+                            ? 'This prompt is encrypted and requires NFT access to view.'
+                            : prompt}
                         </p>
 
                         <div className="pt-2 ml-[10px] w-[100%] text-sm flex justify-center gap-3 border-[10px] border-[#292828] ">
                           <button
                             className="p-2 mb-2 border-[6px] rounded-lg border-[#292828] w-[40%] flex items-center justify-center gap-1"
                             onClick={handleCopyClick}
+                            disabled={prompt.startsWith('U2FsdGVkX1')}
                           >
                             <FaRegCopy className="text-lg" />
                             {buttonText}
@@ -275,7 +279,9 @@ const PromptFreeDetails = ({
                           <h1 className="text-[12px] text-gray-400 text-bold">
                             Chain
                           </h1>
-                          <p className="text-[14px] font-bold">Aptos Testnet</p>
+                          <p className="text-[14px] font-bold">
+                            Movement Porto Testnet
+                          </p>
                         </div>
                         <div>
                           <h1 className="text-[12px] text-gray-400 text-bold">

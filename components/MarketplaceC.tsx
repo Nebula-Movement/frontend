@@ -56,11 +56,11 @@ const MarketplaceC = () => {
           &nbsp; &nbsp; &nbsp;
           <p className="font-bold flex items-center text-xs px-3 rounded-xl border border-gray-300 cursor-pointer">
             <img
-              src="https://s2.coinmarketcap.com/static/img/coins/200x200/21794.png"
+              src="https://pbs.twimg.com/profile_images/1744477796301496320/z7AIB7_W_400x400.jpg"
               alt=""
               className="w-[28px] h-[28px] p-1  rounded-2xl"
             />
-            Aptos
+            Movement
           </p>
         </div>
       </div>

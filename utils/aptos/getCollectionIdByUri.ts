@@ -1,73 +1,19 @@
-import { request, gql } from 'graphql-request';
+import { AptosClient } from 'aptos';
 
-const APTOS_GRAPHQL_ENDPOINT = 'https://testnet.aptoslabs.com/v1/graphql';
+const NODE_URL =
+  process.env.NEXT_PUBLIC_APTOS_NODE_URL ||
+  'https://aptos.testnet.porto.movementlabs.xyz/v1';
+const MODULE_ADDRESS = process.env.NEXT_PUBLIC_MODULE_ADDRESS;
 
-interface NftCollection {
-  collection_id: string;
-  distinct_tokens: number;
-  last_transaction_version: number;
-  owner_address: string;
-  current_collection: {
-    collection_id: string;
-    collection_name: string;
-    creator_address: string;
-    current_supply: number;
-    description: string;
-    last_transaction_timestamp: string;
-    last_transaction_version: number;
-    max_supply: number;
-    mutable_description: string | null;
-    mutable_uri: string | null;
-    table_handle_v1: string | null;
-    token_standard: string;
-    total_minted_v2: number;
-    uri: string;
-    __typename: string;
-  };
-  __typename: string;
-}
-
-interface GetAccountNftCollectionsResponse {
-  current_collection_ownership_v2_view: NftCollection[];
-}
-
-const GET_ACCOUNT_NFT_COLLECTIONS = gql`
-  query GetAccountNftCollections($address: String) {
-    current_collection_ownership_v2_view(
-      where: { owner_address: { _eq: $address } }
-      limit: 1000000
-      offset: 0
-      order_by: [{ last_transaction_version: desc }, { collection_id: asc }]
-    ) {
-      collection_id
-      distinct_tokens
-      last_transaction_version
-      owner_address
-      current_collection {
-        collection_id
-        collection_name
-        creator_address
-        current_supply
-        description
-        last_transaction_timestamp
-        last_transaction_version
-        max_supply
-        mutable_description
-        mutable_uri
-        table_handle_v1
-        token_standard
-        total_minted_v2
-        uri
-        __typename
-      }
-      __typename
-    }
-  }
-`;
+// if (!MODULE_ADDRESS) {
+//   console.warn(
+//     'NEXT_PUBLIC_PROMPT_MARKETPLACE_MODULE_ADDRESS is not set in environment variables'
+//   );
+// }
 
 /**
  * This utility function retrieves the collection ID based on the unique URI.
- * @param userAddress - The address of the user
+ * @param userAddress - The address of the user (not used in new implementation but kept for backwards compatibility)
  * @param uniqueCid - The unique URI string (CID) to search for
  * @returns {Promise<string>} - Returns the collection ID if found, or 'No Collection Found'
  */
@@ -75,26 +21,34 @@ export async function getCollectionIdByUri(
   userAddress: string,
   uniqueCid: string
 ): Promise<string> {
+  // if (!MODULE_ADDRESS) {
+  //   console.error('Module address is not configured');
+  //   return 'No Collection Found';
+  // }
+
   try {
-    const response = await request<GetAccountNftCollectionsResponse>(
-      APTOS_GRAPHQL_ENDPOINT,
-      GET_ACCOUNT_NFT_COLLECTIONS,
-      {
-        address: userAddress,
-      }
-    );
+    const client = new AptosClient(NODE_URL);
 
-    const collections = response.current_collection_ownership_v2_view;
+    const payload = {
+      function: `${MODULE_ADDRESS}::prompt_marketplace::get_collections_with_details`,
+      type_arguments: [],
+      arguments: [],
+    };
 
-    // console.log(collections);
+    const response = await client.view(payload);
 
-    const collection = collections.find((collection: NftCollection) => {
-      return collection.current_collection.uri === uniqueCid;
-    });
+    const collectionIds = response[0] as unknown as string[];
+    const uris = response[1] as unknown as string[];
 
-    return collection ? collection.collection_id : 'No Collection Found';
+    const collections = collectionIds.map((id: string, index: number) => ({
+      id: id,
+      uri: uris[index],
+    }));
+
+    const collection = collections.find((col) => col.uri === uniqueCid);
+    return collection ? collection.id : 'No Collection Found';
   } catch (error) {
-    console.error('Error fetching NFT collections:', error);
+    console.error('Error fetching collections:', error);
     return 'No Collection Found';
   }
 }

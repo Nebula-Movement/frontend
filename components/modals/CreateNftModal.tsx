@@ -23,6 +23,8 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
   const { signAndSubmitTransaction, account, network, wallet } = useWallet();
   console.log(network);
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const isPetraConnected = wallet?.name === 'Petra' && window.petra;
 
   const { prompts } = useImages();
@@ -37,7 +39,7 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
     { trait_type: 'type', value: '' },
   ]);
   const [maxSupply, setMaxSupply] = useState(3000);
-  const [publicMintFeePerNFT, setPublicMintFeePerNFT] = useState(0.1);
+  const [publicMintFeePerNFT, setPublicMintFeePerNFT] = useState(1);
   const [txHash, setTxHash] = useState('');
   const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
   const [completedMint, setCompletedMint] = useState(false);
@@ -136,9 +138,6 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
         name: promptNftName,
         uri: metadataUrl,
         maxSupply: maxSupply,
-        preMintAmount: 1,
-        publicMintStartTime: currentTime,
-        publicMintEndTime: null,
         publicMintLimitPerAddr: 1,
         publicMintFeePerPrompt: publicMintFeePerNFT,
       });
@@ -205,6 +204,8 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
               collection_name: promptNftName,
               max_supply: maxSupply,
               prompt_nft_price: publicMintFeePerNFT,
+              ai_model: 'stable-diffusion',
+              chain: 'Movement Porto',
             }
           );
         } else {
@@ -217,6 +218,8 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
               post_name: promptNftName,
               public: true,
               prompt_tag: '3D Art',
+              ai_model: 'stable-diffusion',
+              chain: 'Movement Porto',
             }
           );
         }
@@ -324,9 +327,6 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
         name: promptNftName,
         uri: metadataUrl,
         maxSupply: maxSupply,
-        preMintAmount: 1,
-        publicMintStartTime: currentTime,
-        publicMintEndTime: null,
         publicMintLimitPerAddr: 1,
         publicMintFeePerPrompt: publicMintFeePerNFT,
       });
@@ -342,44 +342,35 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
 
       console.log('Transaction response:', response);
 
-      const committedTransactionResponse =
-        await aptosClient().waitForTransaction({
-          transactionHash: response.hash,
-        });
-
-      console.log('Committed transaction:', committedTransactionResponse);
-
-      if (committedTransactionResponse.success) {
+      if (response.hash) {
         setTxHash(response.hash);
         setCompletedMint(true);
 
         if (isSwitchEnabled) {
-          await axios.post(
-            'https://deep-zitella-Nebula-846660d9.koyeb.app/marketplace/add-premium-prompts/',
-            {
-              ipfs_image_url: imageUrl,
-              account_address: account.address,
-              prompt: promptValue,
-              post_name: promptNftName,
-              cid: metadataUrl,
-              prompt_tag: '3D Art',
-              collection_name: promptNftName,
-              max_supply: maxSupply,
-              prompt_nft_price: publicMintFeePerNFT,
-            }
-          );
+          await axios.post(`${baseUrl}/marketplace/add-premium-prompts/`, {
+            ipfs_image_url: imageUrl,
+            account_address: account.address,
+            prompt: promptValue,
+            post_name: promptNftName,
+            cid: metadataUrl,
+            prompt_tag: '3D Art',
+            collection_name: promptNftName,
+            max_supply: maxSupply,
+            prompt_nft_price: publicMintFeePerNFT,
+            ai_model: 'stable-diffusion',
+            chain: 'ethereum',
+          });
         } else {
-          await axios.post(
-            `https://deep-zitella-Nebula-846660d9.koyeb.app/prompts/add-public-prompts/`,
-            {
-              ipfs_image_url: imageUrl,
-              prompt: promptValue,
-              account_address: account.address,
-              post_name: promptNftName,
-              public: true,
-              prompt_tag: '3D Art',
-            }
-          );
+          await axios.post(`${baseUrl}/prompts/add-public-prompts/`, {
+            ipfs_image_url: imageUrl,
+            prompt: promptValue,
+            account_address: account.address,
+            post_name: promptNftName,
+            public: true,
+            prompt_tag: '3D Art',
+            ai_model: 'stable-diffusion',
+            chain: 'ethereum',
+          });
         }
 
         setPromptNftName('');
@@ -609,7 +600,7 @@ const CreateNftModal = ({ openModal, handleOnClose, image }) => {
                         //   onClick={closeModal}
                       >
                         <a target="_blank" href={'' + txHash}>
-                          Confirm on Aptos
+                          Confirm on Movement
                         </a>
                       </button>
                       &nbsp;&nbsp;&nbsp;

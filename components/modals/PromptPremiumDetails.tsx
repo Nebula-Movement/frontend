@@ -68,8 +68,21 @@ const PromptPremiumDetails = ({
     queryKey: ['userAccess', account?.address, cid],
     queryFn: async () => {
       if (account?.address && cid) {
+        // Check local storage first
+        const accessKey = `${account.address}-${cid}`;
+        const localAccess = localStorage.getItem(accessKey);
+
+        if (localAccess === 'Has Access') {
+          const decryptionKey = generateKey(name);
+          const decryptedPrompt = decryptPrompt(prompt, decryptionKey);
+          return { hasAccess: true, decryptedPrompt };
+        }
+
+        // If not in local storage, check on-chain
         const accessResponse = await checkUserNftAccess(account.address, cid);
         if (accessResponse === 'Has Access') {
+          // Save to local storage if we get on-chain confirmation
+          localStorage.setItem(accessKey, 'Has Access');
           const decryptionKey = generateKey(name);
           const decryptedPrompt = decryptPrompt(prompt, decryptionKey);
           return { hasAccess: true, decryptedPrompt };
@@ -106,18 +119,16 @@ const PromptPremiumDetails = ({
         })
       );
 
-      const committedTransactionResponse =
-        await aptosClient().waitForTransaction({
-          transactionHash: response.hash,
-        });
-
-      if (!committedTransactionResponse.success) {
-        throw new Error('Transaction failed. Check console for details.');
-      }
+      console.log('Transaction response:', response);
 
       return `Successfully minted ${amount} NFT(s)!`;
     },
     onSuccess: (data) => {
+      // Save access status to local storage with the user's address and CID
+      if (account?.address && cid) {
+        const accessKey = `${account.address}-${cid}`;
+        localStorage.setItem(accessKey, 'Has Access');
+      }
       toast.success('Successfully bought a Prompt NFT');
     },
     onError: (error) => {
@@ -355,7 +366,9 @@ const PromptPremiumDetails = ({
                           <h1 className="text-[12px] text-gray-400 text-bold">
                             Chain
                           </h1>
-                          <p className="text-[14px] font-bold">Aptos Testnet</p>
+                          <p className="text-[14px] font-bold">
+                            Movement Porto Testnet
+                          </p>
                         </div>
                         <div>
                           <h1 className="text-[12px] text-gray-400 text-bold">
@@ -397,7 +410,7 @@ const PromptPremiumDetails = ({
                               className="text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-[80%] font-bold px-24 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 rounded-lg sm:w-auto py-4 text-center text-lg cursor-pointer hover:opacity-50"
                               onClick={handleMint}
                             >
-                              Buy for {price} APT
+                              Buy for {price} MOVE
                             </span>
                           )}
                         </div>
