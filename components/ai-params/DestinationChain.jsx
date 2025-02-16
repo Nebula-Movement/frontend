@@ -5,7 +5,7 @@ import { Listbox, Transition } from '@headlessui/react';
 const destination_chain = [
   {
     name: 'Movement Porto Testnet',
-    img: 'https://s2.coinmarketcap.com/static/img/coins/200x200/21794.png',
+    img: 'https://pbs.twimg.com/profile_images/1744477796301496320/z7AIB7_W_400x400.jpg',
   },
 ];
 

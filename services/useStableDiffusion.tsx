@@ -10,7 +10,7 @@ const useStableDiffusion = async (
   options: StableDiffusionOptions = {}
 ) => {
   const token = process.env.NEXT_PUBLIC_SD_API_KEY;
-  const { useHighQuality = true, numSamples = 1 } = options;
+  const { useHighQuality = true, numSamples = 4 } = options;
 
   const enhancedPrompt = `fantasy, highly detailed, 8k resolution, professional photography, masterpiece, ${prompt}`;
 
@@ -23,7 +23,7 @@ const useStableDiffusion = async (
       const payload = {
         prompt: enhancedPrompt,
         negative_prompt: negativePrompt,
-        style_preset: 'neon-punk',
+        // style_preset: 'neon-punk',
         output_format: 'webp',
         ...options,
       };
